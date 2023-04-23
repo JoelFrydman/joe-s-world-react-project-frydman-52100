@@ -1,19 +1,69 @@
-import { Button, Image, StyleSheet, TextInput, View } from 'react-native';
+import {
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+
+import { useState } from "react";
 
 export default function App() {
+  const [textItem, setTextItem] = useState("");
+  const [list, setList] = useState([]);
+
+  const onHandleChangeText = (text) => {
+    setTextItem(text);
+    console.log(text);
+  };
+
+  const addItem = () => {
+    setList((prevState) => [
+      ...prevState,
+      { name: textItem, id: Math.random().toString() },
+    ]);
+    setTextItem("");
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.renderItemStyle}>
+      <Text>{item.name}</Text>
+      <Button
+        title="X"
+        onPress={() => console.log("Aqui se abrira un modal")}
+        color={"red"}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-      <TextInput placeholder='elemento de la lista' style={styles.input}/>
-      <Button
-      title='Presiona aqui'
-      onPress={()=>console.log("presiona aqui")}/>
-      </View>
       <View>
-      <Image
-        style={styles.tinyLogo}
-        source={require('./assets/imgs/logo.png')}
-      />
+        <Image
+          style={styles.tinyLogo}
+          source={require("./assets/imgs/logo.png")}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.titleContainer}>Shopping List</Text>
+        <View style={styles.addItemContainer}>
+          <TextInput
+            placeholder="elemento de la lista"
+            style={styles.input}
+            onChangeText={onHandleChangeText}
+            value={textItem}
+          />
+          <Button title="Presiona aqui" onPress={addItem} />
+        </View>
+      </View>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={list}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
       </View>
     </View>
   );
@@ -21,21 +71,55 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 30,
-  },
-  
-  inputContainer:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center"
+    flex: 1,
+    backgroundColor: "#E7EAF2",
   },
 
-  input:{
-    borderBottomColor:"black",
-    borderBottomWidth:2,
-    width:200,
+  inputContainer: {
+    height: 200,
+    paddingHorizontal: 30,
+    paddingTop: 20,
+  },
+  titleContainer: {
+    marginBottom: 20,
+    fontSize: 40,
+    fontWeight: "500",
+    color: "#1E283C",
+  },
+  addItemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  input: {
+    borderBottomColor: "black",
+    borderBottomWidth: 2,
+    width: 200,
+  },
+  listContainer: {
+    flex: 2,
+    marginHorizontal: 30,
+    marginTop: 1,
+    padding: 3,
+  },
+  renderItemStyle: {
+    height: 60,
+    flexDirection: "row",
+    marginBottom: 5,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: "space-around",
+    alignItems: "center",
+    shadowColor: "black",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    elevation: 3,
   },
   tinyLogo: {
+    marginTop: 25,
     width: 150,
     height: 100,
   },
