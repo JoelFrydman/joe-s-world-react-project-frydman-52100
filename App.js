@@ -8,11 +8,14 @@ import {
   View,
 } from "react-native";
 
+import Modal from "./src/components/Modal";
 import { useState } from "react";
 
 export default function App() {
   const [textItem, setTextItem] = useState("");
   const [list, setList] = useState([]);
+  const [itemSelected, setItemSelected] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
 
   const onHandleChangeText = (text) => {
     setTextItem(text);
@@ -26,15 +29,24 @@ export default function App() {
     ]);
     setTextItem("");
   };
+  const onHandleModal = item => {
+    console.log("en esta funcion seteo el item y abro el modal");
+    setItemSelected(item);
+    setModalVisible(true);
+  };
+
+  const onHandleDelete = item => {
+    console.log("eliminar este item", item);
+    setList(prevState =>
+      prevState.filter(element => element.name !== item.name)
+    );
+    setModalVisible(false);
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.renderItemStyle}>
       <Text>{item.name}</Text>
-      <Button
-        title="X"
-        onPress={() => console.log("Aqui se abrira un modal")}
-        color={"red"}
-      />
+      <Button title="X" onPress={() => onHandleModal(item)} color={"red"} />
     </View>
   );
 
@@ -65,6 +77,11 @@ export default function App() {
           keyExtractor={(item) => item.id}
         />
       </View>
+      <Modal
+        isVisible={modalVisible}
+        actionDeleteItem={() => onHandleDelete(itemSelected)}
+        itemSelected={itemSelected}
+      />
     </View>
   );
 }
@@ -98,10 +115,9 @@ const styles = StyleSheet.create({
     width: 200,
   },
   listContainer: {
-    flex: 2,
+    flex: 1,
     marginHorizontal: 30,
-    marginTop: 1,
-    padding: 3,
+
   },
   renderItemStyle: {
     height: 60,
